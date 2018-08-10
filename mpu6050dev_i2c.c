@@ -9,7 +9,7 @@
 
 static int file_i2c = 0;
 
-int  mpuWriteByte(unsigned char addr, unsigned char byte);
+int  mpuWriteByte(const unsigned char addr, const unsigned char byte);
 
 
 //
@@ -17,7 +17,7 @@ int  mpuWriteByte(unsigned char addr, unsigned char byte);
 // Initializes the mpu controller 
 // Returns 0 for success, 1 for failure
 //
-int mpuInit(int channel, unsigned char addr)
+int mpuInit(const int channel, const unsigned char i2c_addr)
 {
 	char filename[32];
 	int rc;
@@ -31,7 +31,7 @@ int mpuInit(int channel, unsigned char addr)
 		return 1;
 	}
 
-	if (ioctl(file_i2c, I2C_SLAVE, addr) < 0)
+	if (ioctl(file_i2c, I2C_SLAVE, i2c_addr) < 0)
 	{
 		fprintf(stderr, "Failed to acquire bus access or talk to slave\n");
 		file_i2c = 0;
@@ -75,7 +75,7 @@ void mpuShutdown()
 	}
 }
 
-int16_t mpuReadWord(unsigned char addr)
+int16_t mpuReadWord(const unsigned char addr)
 {
 	unsigned char buf[2];
 	int rc;
@@ -90,7 +90,7 @@ int16_t mpuReadWord(unsigned char addr)
 	return ret;
 }
 
-unsigned char  mpuReadByte(unsigned char addr)
+unsigned char  mpuReadByte(const unsigned char addr)
 {
 	unsigned char buf[1] = {addr};
         unsigned char ret = 0xff;
@@ -102,7 +102,7 @@ unsigned char  mpuReadByte(unsigned char addr)
 	return ret;
 }
 
-int  mpuWriteByte(unsigned char addr, unsigned char byte)
+int  mpuWriteByte(const unsigned char addr, const unsigned char byte)
 {
 	unsigned char buf[2] = {addr, byte};
 	int rc = write(file_i2c, buf, 2);
@@ -112,11 +112,11 @@ int  mpuWriteByte(unsigned char addr, unsigned char byte)
 	return 0;
 }
 
-void  mpuReadAll(int16_t *sensors)
+void mpuReadAll(struct mpu_data_t *data)
 {
 	unsigned char i;
 	for(i=0; i<7; ++i) {
-		sensors[i] = mpuReadWord(REG_ACCEL_XOUT_H + i*2);
+		data->mem[i] = mpuReadWord(REG_ACCEL_XOUT_H + i*2);
 	}
 }
 

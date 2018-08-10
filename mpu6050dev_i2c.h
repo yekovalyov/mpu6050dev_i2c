@@ -3,11 +3,29 @@
 
 #include <stdint.h>
 
-int mpuInit(int iChannel, unsigned char iAddress);
 
-int16_t mpuReadWord(unsigned char addr);
+struct mpu_data_t {
+	union {
+		int16_t mem[7];
+		uint16_t umem[7];
+		struct {
+			int16_t  accel_x;
+			int16_t  accel_y;
+			int16_t  accel_z;
+			int16_t  temperature;
+			int16_t  gyro_x;
+			int16_t  gyro_y;
+			int16_t  gyro_z;
+		} regs;
+	};
+};
 
-void mpuReadAll(int16_t *sensors);
+
+int mpuInit(const int channel, const unsigned char i2c_address);
+
+int16_t mpuReadWord(const unsigned char addr);
+
+void mpuReadAll(struct mpu_data_t *data);
 
 // Turns off sensor and closes the I2C handle
 void mpuShutdown(void);
