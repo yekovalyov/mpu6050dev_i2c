@@ -1,3 +1,5 @@
 *.o
 *.gch
 *.a
+sample_mpu6050dev_i2c
+
